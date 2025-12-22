@@ -5,6 +5,7 @@ class RushHourGame {
     /** Constructs a new Rush Hour Game. */
     constructor RushHourGame new() {
         let board = Board.new();
+        do board.draw();
         let exit = false;
         return this;
     }

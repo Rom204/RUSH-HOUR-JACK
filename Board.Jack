@@ -7,6 +7,48 @@ class Board {
         return this;
     }
 
+    /** Draws the board with grid lines and exit. */
+    method void draw() {
+        var int i, j;
+        var int x1, y1;
+        
+        let x1 = 160;
+        let y1 = 32;
+        
+        do Screen.setColor(true);
+
+        // Draw horizontal lines
+        let i = 0;
+        while (i < 7) {
+            do Screen.drawLine(x1, y1 + (i * 32), x1 + 192, y1 + (i * 32));
+            let i = i + 1;
+        }
+        
+        // Draw vertical lines
+        let i = 0;
+        while (i < 7) {
+            // Check if it is the rightmost line (index 6) to leave gap for exit
+            if (i = 6) {
+                // Gap at row 2 (y1 + 64 to y1 + 96)
+                do Screen.drawLine(x1 + (i * 32), y1, x1 + (i * 32), y1 + 64);
+                
+                // Draw dotted line for exit (every 4 pixels)
+                let j = y1 + 64;
+                while (j < (y1 + 96)) {
+                    do Screen.drawPixel(x1 + (i * 32), j);
+                    let j = j + 4;
+                }
+
+                do Screen.drawLine(x1 + (i * 32), y1 + 96, x1 + (i * 32), y1 + 192);
+            }
+            else {
+                do Screen.drawLine(x1 + (i * 32), y1, x1 + (i * 32), y1 + 192);
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+
     /** Disposes the board. */
     method void dispose() {
         if (~(grid = 0)) {
