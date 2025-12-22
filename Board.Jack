@@ -1,11 +1,146 @@
 class Board {
     field Array grid;
+    field Array cars;
+    field int carCount;
 
     /** Constructs a new Board. */
     constructor Board new() {
         let grid = Array.new(36);
+        let cars = Array.new(10); // Max 10 cars
+        let carCount = 0;
+        do clearGrid();
         return this;
     }
+    
+    method void clearGrid() {
+        var int i;
+        let i = 0;
+        while (i < 36) {
+            let grid[i] = 0; // 0 means empty
+            let i = i + 1;
+        }
+        return;
+    }
+
+    /** Adds a car to the board. returns true if successful. */
+    method boolean addCar(int x, int y, int len, boolean vert) {
+        var Car c;
+        var int i, pos;
+        
+        if (carCount = 10) { return false; }
+
+        // Check bounds and collision
+        // (Simplified for now: assumes initial setup is valid or caller checks)
+        // Ideally we should check grid here.
+        
+        // Create Car
+        let c = Car.new(x, y, len, vert);
+        let cars[carCount] = c;
+        
+        // Mark grid
+        let i = 0;
+        while (i < len) {
+            if (vert) {
+                let pos = ((y + i) * 6) + x;
+            }
+            else {
+                let pos = (y * 6) + (x + i);
+            }
+            let grid[pos] = carCount + 1; // ID 1..10
+            let i = i + 1;
+        }
+
+        let carCount = carCount + 1;
+        return true;
+    }
+
+    /** Moves a car. direction: 1=Up, 2=Down, 3=Left, 4=Right. */
+    method void moveCar(int carIndex, int dir) {
+        var Car c;
+        var int x, y, len;
+        var boolean vert;
+        var int i, pos;
+        var boolean canMove;
+        
+        if ((carIndex < 0) | (carIndex > (carCount - 1))) { return; }
+        
+        let c = cars[carIndex];
+        let x = c.getX();
+        let y = c.getY();
+        let len = c.getLength();
+        let vert = c.isVertical();
+        let canMove = false;
+
+        // Logic to check movement
+        // 1. Clear current position from grid
+        let i = 0;
+        while (i < len) {
+            if (vert) { let pos = ((y + i) * 6) + x; }
+            else { let pos = (y * 6) + (x + i); }
+            let grid[pos] = 0;
+            let i = i + 1;
+        }
+
+        // 2. Check collision for new position
+        if (dir = 1) { // Up
+            if (vert & (y > 0)) {
+                if (grid[((y - 1) * 6) + x] = 0) {
+                    let y = y - 1;
+                    let canMove = true;
+                }
+            }
+        }
+        if (dir = 2) { // Down
+            if (vert & ((y + len) < 6)) {
+                if (grid[((y + len) * 6) + x] = 0) {
+                    let y = y + 1;
+                    let canMove = true;
+                }
+            }
+        }
+        if (dir = 3) { // Left
+            if (~vert & (x > 0)) {
+                if (grid[(y * 6) + (x - 1)] = 0) {
+                    let x = x - 1;
+                    let canMove = true;
+                }
+            }
+        }
+        if (dir = 4) { // Right
+            if (~vert & ((x + len) < 6)) {
+                if (grid[(y * 6) + (x + len)] = 0) {
+                    let x = x + 1;
+                    let canMove = true;
+                }
+            }
+        }
+
+        // 3. Update position and Re-mark grid
+        if (canMove) {
+            do c.setPos(x, y);
+        }
+        
+        // Re-fill grid with new (or old) position
+        let i = 0; 
+        // Need to fetch latest if updated
+        let x = c.getX();
+        let y = c.getY();
+        
+        while (i < len) {
+             if (vert) { let pos = ((y + i) * 6) + x; }
+             else { let pos = (y * 6) + (x + i); }
+             let grid[pos] = carIndex + 1;
+             let i = i + 1;
+        }
+        
+        return;
+    }
+    
+    /** Returns car count */
+    method int getCarCount() { return carCount; }
+    
+    /** Returns car object */
+    method Car getCar(int index) { return cars[index]; }
 
     /** Draws the board with grid lines and exit. */
     method void draw() {
@@ -15,6 +150,10 @@ class Board {
         let x1 = 160;
         let y1 = 32;
         
+        // Clear the board area first to remove trails
+        do Screen.setColor(false);
+        do Screen.drawRectangle(x1, y1, x1 + 192, y1 + 192);
+
         do Screen.setColor(true);
 
         // Draw horizontal lines
@@ -46,6 +185,34 @@ class Board {
             }
             let i = i + 1;
         }
+
+        // Draw Cars
+        let i = 0;
+        while (i < carCount) {
+             // We need to pass if selected, but Board doesn't know selection.
+             // We'll add a 'selectedCarIndex' argument to draw, or handle it in Game.
+             // For now, let's keep draw() simple and assume Game redraws or we add argument.
+             // Let's modify draw signature to accept selectedIndex
+             do drawCarInternal(i);
+             let i = i + 1;
+        }
+        return;
+    }
+
+    method void drawCarInternal(int index) {
+         var Car c;
+         let c = cars[index];
+         // Default not selected, handled by specific redraw or passed param
+         do c.draw(false); 
+         return;
+    }
+    
+    /** Draws a specific car with selection status */
+    method void drawCar(int index, boolean selected) {
+        var Car c;
+        if ((index < 0) | (index > (carCount - 1))) { return; }
+        let c = cars[index];
+        do c.draw(selected);
         return;
     }
 

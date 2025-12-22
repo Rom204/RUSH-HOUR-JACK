@@ -12,6 +12,60 @@ class Car {
         return this;
     }
 
+    /** Returns the x position. */
+    method int getX() { return x; }
+
+    /** Returns the y position. */
+    method int getY() { return y; }
+
+    /** Returns the length. */
+    method int getLength() { return length; }
+
+    /** Returns true if vertical. */
+    method boolean isVertical() { return isVertical; }
+
+    /** Sets the position. */
+    method void setPos(int ax, int ay) {
+        let x = ax;
+        let y = ay;
+        return;
+    }
+
+    /** Draws the car. */
+    method void draw(boolean selected) {
+        var int x1, y1, x2, y2;
+        var int margin, drawX, drawY;
+        
+        let margin = 6; // Increased gap to make cars smaller
+        
+        // Calculate screen coordinates
+        let drawX = 160 + (x * 32);
+        let drawY = 32 + (y * 32);
+
+        let x1 = drawX + margin;
+        let y1 = drawY + margin;
+
+        if (isVertical) {
+            let x2 = x1 + 32 - (2 * margin);
+            let y2 = y1 + (length * 32) - (2 * margin);
+        }
+        else {
+            let x2 = x1 + (length * 32) - (2 * margin);
+            let y2 = y1 + 32 - (2 * margin);
+        }
+
+        do Screen.setColor(true); // Draw black rectangle
+        do Screen.drawRectangle(x1, y1, x2, y2);
+
+        if (selected) {
+            do Screen.setColor(false); // Draw white inner rect for selection
+            do Screen.drawRectangle(x1 + 4, y1 + 4, x2 - 4, y2 - 4);
+            do Screen.setColor(true); // Restore color
+        }
+        
+        return;
+    }
+
     /** Disposes the car. */
     method void dispose() {
         do Memory.deAlloc(this);
