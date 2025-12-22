@@ -1,0 +1,84 @@
+class Renderer {
+    field int offsetX;
+    field int offsetY;
+    field int cellSize;
+    field int gap;
+
+    /** Constructs a new Renderer. */
+    constructor Renderer new() {
+        let cellSize = 32;
+        let offsetX = 160;
+        let offsetY = 32;
+        let gap = 2;
+        return this;
+    }
+
+    /** Draws the entire board grid (lines). */
+    method void drawGrid() {
+        var int i;
+        var int totalSize;
+        
+        // Clear area first if needed (optional optimization)
+        do Screen.setColor(true); // Black for lines/blocks
+
+        let totalSize = cellSize * 6;
+        
+        // Draw vertical lines
+        let i = 0;
+        while (i < 7) {
+             do Screen.drawLine(offsetX + (i * cellSize), offsetY, offsetX + (i * cellSize), offsetY + totalSize);
+             let i = i + 1;
+        }
+
+        // Draw horizontal lines
+        let i = 0;
+        while (i < 7) {
+             do Screen.drawLine(offsetX, offsetY + (i * cellSize), offsetX + totalSize, offsetY + (i * cellSize));
+             let i = i + 1;
+        }
+
+        return;
+    }
+
+    /** Draws a car on the board. 
+     *  x, y: grid coordinates (0-5)
+     *  len: length of car (2 or 3)
+     *  width: pixel width of car (slightly less than cellSize)
+     *  vert: true if vertical, false if horizontal
+     */
+    method void drawCar(int x, int y, int len, boolean vert) {
+        var int x1, y1, x2, y2;
+        var int margin;
+        
+        let margin = gap; 
+        
+        let x1 = offsetX + (x * cellSize) + margin;
+        let y1 = offsetY + (y * cellSize) + margin;
+        
+        if (vert) {
+            let x2 = x1 + cellSize - (2 * margin);
+            let y2 = y1 + (len * cellSize) - (2 * margin);
+        }
+        else {
+            let x2 = x1 + (len * cellSize) - (2 * margin);
+            let y2 = y1 + cellSize - (2 * margin);
+        }
+        
+        do Screen.setColor(true);
+        do Screen.drawRectangle(x1, y1, x2, y2);
+        return;
+    }
+
+    /** Clears the game area. */
+    method void clear() {
+        do Screen.setColor(false);
+        do Screen.drawRectangle(offsetX, offsetY, offsetX + (6 * cellSize), offsetY + (6 * cellSize));
+        return;
+    }
+
+    /** Disposes the renderer. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
