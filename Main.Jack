@@ -1,7 +1,23 @@
 class Main {
     function void main() {
         var RushHourGame game;
-        let game = RushHourGame.new();
+        var int seed;
+        var char key;
+        
+        do Output.printString("Press any key to start...");
+        
+        let seed = 0;
+        let key = 0;
+        
+        while (key = 0) {
+            let key = Keyboard.keyPressed();
+            let seed = seed + 1;
+        }
+        
+        // Clear previous output
+        do Screen.clearScreen();
+        
+        let game = RushHourGame.new(seed);
         do game.run();
         do game.dispose();
         return;

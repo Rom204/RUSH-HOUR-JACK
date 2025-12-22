@@ -4,16 +4,11 @@ class RushHourGame {
     field int selectedCar;
 
     /** Constructs a new Rush Hour Game. */
-    constructor RushHourGame new() {
+    constructor RushHourGame new(int seed) {
         let board = Board.new();
         
-        // Setup a simple level (Length 2 cars only)
-        // Red Car (0): Horizontal, Row 2, Starts at Col 0. isPlayer = true. ID=0 (ignored for display).
-        do board.addCar(0, 2, 2, false, true, 0); 
-        
-        // Blocker Car (1): Vertical, Col 2, Starts at Row 1 (Blocks (2,1) and (2,2)). isPlayer = false. ID=1.
-        // To solve: Move Car 1 UP to (2,0).
-        do board.addCar(2, 1, 2, true, false, 1);
+        // Generate level based on seed
+        do LevelGenerator.generate(board, seed);
         
         let selectedCar = 0;
         
