@@ -1,0 +1,18 @@
+class Board {
+    field Array grid;
+
+    /** Constructs a new Board. */
+    constructor Board new() {
+        let grid = Array.new(36);
+        return this;
+    }
+
+    /** Disposes the board. */
+    method void dispose() {
+        if (~(grid = 0)) {
+            do grid.dispose();
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+}

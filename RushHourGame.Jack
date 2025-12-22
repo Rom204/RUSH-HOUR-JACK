@@ -1,0 +1,37 @@
+class RushHourGame {
+    field Board board;
+    field boolean exit;
+
+    /** Constructs a new Rush Hour Game. */
+    constructor RushHourGame new() {
+        let board = Board.new();
+        let exit = false;
+        return this;
+    }
+
+    /** Runs the game: handles the user's inputs and moves the square accordingly */
+    method void run() {
+        var char key;
+        
+        while (~exit) {
+            // waits for a key to be pressed
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            if (key = 81)  { let exit = true; }     // q key
+            
+            // waits for the key to be released
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        return;
+    }
+
+    /** Disposes this game. */
+    method void dispose() {
+        do board.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

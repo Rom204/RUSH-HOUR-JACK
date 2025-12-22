@@ -1,0 +1,20 @@
+class Car {
+    field int x, y;
+    field int length;
+    field boolean isVertical;
+
+    /** Constructs a new Car. */
+    constructor Car new(int ax, int ay, int alength, boolean aisVertical) {
+        let x = ax;
+        let y = ay;
+        let length = alength;
+        let isVertical = aisVertical;
+        return this;
+    }
+
+    /** Disposes the car. */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
