@@ -23,7 +23,7 @@ class Board {
     }
 
     /** Adds a car to the board. returns true if successful. */
-    method boolean addCar(int x, int y, int len, boolean vert) {
+    method boolean addCar(int x, int y, int len, boolean vert, boolean isPlayer, int aid) {
         var Car c;
         var int i, pos;
         
@@ -34,7 +34,7 @@ class Board {
         // Ideally we should check grid here.
         
         // Create Car
-        let c = Car.new(x, y, len, vert);
+        let c = Car.new(x, y, len, vert, isPlayer, aid);
         let cars[carCount] = c;
         
         // Mark grid

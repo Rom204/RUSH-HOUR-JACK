@@ -8,12 +8,12 @@ class RushHourGame {
         let board = Board.new();
         
         // Setup a simple level (Length 2 cars only)
-        // Red Car (0): Horizontal, Row 2, Starts at Col 0
-        do board.addCar(0, 2, 2, false); 
+        // Red Car (0): Horizontal, Row 2, Starts at Col 0. isPlayer = true. ID=0 (ignored for display).
+        do board.addCar(0, 2, 2, false, true, 0); 
         
-        // Blocker Car (1): Vertical, Col 2, Starts at Row 1 (Blocks (2,1) and (2,2))
+        // Blocker Car (1): Vertical, Col 2, Starts at Row 1 (Blocks (2,1) and (2,2)). isPlayer = false. ID=1.
         // To solve: Move Car 1 UP to (2,0).
-        do board.addCar(2, 1, 2, true);
+        do board.addCar(2, 1, 2, true, false, 1);
         
         let selectedCar = 0;
         
@@ -40,11 +40,11 @@ class RushHourGame {
 
             if (key = 81)  { let exit = true; }     // q
             
-            // Selection: 1-9 (key 49-57). '1' maps to index 0.
-            if ((key > 48) & (key < 58)) {
+            // Selection: 0-9 (key 48-57). '0' maps to index 0.
+            if ((key > 47) & (key < 58)) {
                 // Deselect old
                 do board.drawCar(selectedCar, false);
-                let selectedCar = key - 49;
+                let selectedCar = key - 48;
                 // Check bounds (optional, if we have fewer cars)
                 if (selectedCar > (board.getCarCount() - 1)) {
                      let selectedCar = board.getCarCount() - 1;

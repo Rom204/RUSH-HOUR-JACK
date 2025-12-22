@@ -2,13 +2,17 @@ class Car {
     field int x, y;
     field int length;
     field boolean isVertical;
+    field boolean isPlayer;
+    field int id;
 
     /** Constructs a new Car. */
-    constructor Car new(int ax, int ay, int alength, boolean aisVertical) {
+    constructor Car new(int ax, int ay, int alength, boolean aisVertical, boolean aisPlayer, int aid) {
         let x = ax;
         let y = ay;
         let length = alength;
         let isVertical = aisVertical;
+        let isPlayer = aisPlayer;
+        let id = aid;
         return this;
     }
 
@@ -36,7 +40,7 @@ class Car {
         var int x1, y1, x2, y2;
         var int margin, drawX, drawY;
         
-        let margin = 6; // Increased gap to make cars smaller
+        let margin = 6; // Gap
         
         // Calculate screen coordinates
         let drawX = 160 + (x * 32);
@@ -54,13 +58,31 @@ class Car {
             let y2 = y1 + 32 - (2 * margin);
         }
 
-        do Screen.setColor(true); // Draw black rectangle
+        do Screen.setColor(true); // Black border
         do Screen.drawRectangle(x1, y1, x2, y2);
+        
+        do Screen.setColor(false); // White body
+        do Screen.drawRectangle(x1 + 1, y1 + 1, x2 - 1, y2 - 1);
+        
+        do Screen.setColor(true); // Black Text
+        
+        // Text positioning approximation
+        // Row height ~11, Col width ~8
+        if (isPlayer) {
+            do Output.moveCursor((y1 + 10) / 11, (x1 + 4) / 8);
+            do Output.printString("CAR");
+        }
+        else {
+            do Output.moveCursor((y1 + 10) / 11, (x1 + 10) / 8);
+            do Output.printInt(id);
+        }
 
         if (selected) {
-            do Screen.setColor(false); // Draw white inner rect for selection
+            // Visualize selection with a double border (inner black rect)
+            do Screen.drawRectangle(x1 + 3, y1 + 3, x2 - 3, y2 - 3);
+            do Screen.setColor(false);
             do Screen.drawRectangle(x1 + 4, y1 + 4, x2 - 4, y2 - 4);
-            do Screen.setColor(true); // Restore color
+            do Screen.setColor(true);
         }
         
         return;
