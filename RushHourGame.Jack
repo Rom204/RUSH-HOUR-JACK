@@ -2,9 +2,13 @@ class RushHourGame {
     field Board board;
     field boolean exit;
     field int selectedCar;
+    field int seed;
+    field int moves;
 
     /** Constructs a new Rush Hour Game. */
-    constructor RushHourGame new(int seed) {
+    constructor RushHourGame new(int aseed) {
+        let seed = aseed;
+        let moves = 0;
         let board = Board.new();
         
         // Generate level based on seed
@@ -14,6 +18,7 @@ class RushHourGame {
         
         do board.draw();
         do board.drawCar(selectedCar, true); // Highlight selected
+        do drawDashboard();
         
         let exit = false;
         return this;
@@ -23,7 +28,8 @@ class RushHourGame {
     method void run() {
         var char key;
         var boolean redraw;
-        var Car redCar;
+        var boolean moved;
+        var Car redCar; // Declare outside loop if possible or inside block
         
         while (~exit) {
             // waits for a key to be pressed
@@ -32,8 +38,24 @@ class RushHourGame {
             }
             
             let redraw = false;
+            let moved = false;
 
             if (key = 81)  { let exit = true; }     // q
+            
+            // R key for Reset (82 or 114)
+            if (key = 82) {
+                let seed = seed + 1;
+                let moves = 0;
+                do board.dispose();
+                do Screen.clearScreen();
+                let board = Board.new();
+                do LevelGenerator.generate(board, seed);
+                let selectedCar = 0;
+                do board.draw();
+                do board.drawCar(selectedCar, true);
+                do drawDashboard();
+                do Sys.wait(500); // Prevent spamming
+            }
             
             // Selection: 0-9 (key 48-57). '0' maps to index 0.
             if ((key > 47) & (key < 58)) {
@@ -51,36 +73,41 @@ class RushHourGame {
             // Movement: Arrows
             // Up: 131, Down: 133, Left: 130, Right: 132
             
-            if (key = 131) { do board.moveCar(selectedCar, 1); let redraw = true; } // Up
-            if (key = 133) { do board.moveCar(selectedCar, 2); let redraw = true; } // Down
-            if (key = 130) { do board.moveCar(selectedCar, 3); let redraw = true; } // Left
-            if (key = 132) { do board.moveCar(selectedCar, 4); let redraw = true; } // Right
+            if (key = 131) { 
+                let moved = board.moveCar(selectedCar, 1); 
+                let redraw = true; 
+            } 
+            if (key = 133) { 
+                let moved = board.moveCar(selectedCar, 2); 
+                let redraw = true; 
+            }
+            if (key = 130) { 
+                let moved = board.moveCar(selectedCar, 3); 
+                let redraw = true; 
+            }
+            if (key = 132) { 
+                let moved = board.moveCar(selectedCar, 4); 
+                let redraw = true; 
+            }
 
             if (redraw) {
-                // Clear grid area before redraw to avoid trails? 
-                // Or Board.moveCar handles clean redraw? 
-                // Board.moveCar only updates grid. We should ideally clear and redraw active active areas.
-                // For simplicity, let's redraw entire board or just the car.
-                // Since moveCar updates internal state, let's simple redraw the specific car?
-                // Problem: If it moves, we need to clear its old spot.
-                // Helper: board.draw() clears lines but not rectangles?
-                // Let's force full redraw for robustness first.
-                
-                // Optimization: Erase old car pos? Board.moveCar does logic but not drawing.
-                // Actually, Board.moveCar logic I wrote implies it updates grid.
-                // Let's just call board.draw() again.
+                // If move was successful, increment moves
+                if (moved) {
+                    let moves = moves + 1;
+                    do drawDashboard();
+                }
+
+                // Call board.draw() again updates grid visuals
                 do board.draw(); 
                 do board.drawCar(selectedCar, true);
                 
                 // Win Check: Car 0 (Red) reached x=4 (occupies 4,5)
                 let redCar = board.getCar(0);
                 if (redCar.getX() = 4) {
-                    do Output.moveCursor(11, 27);
-                    do Output.printString("You Win!");
-                    do Sys.wait(2000); // Wait 2 seconds
-                    let exit = true;
+                    do Output.moveCursor(11, 23);
+                    do Output.printString("You Win! Press R");
+                    // Do not exit, allow user to press R to regen
                 }
-                // Re-select loop var to avoid double object access if needed, but here it's fine.
             }
 
             // waits for the key to be released
@@ -88,6 +115,24 @@ class RushHourGame {
                 let key = Keyboard.keyPressed();
             }
         }
+        return;
+    }
+    
+    /** Draws the dashboard below the board. */
+    method void drawDashboard() {
+        // Board is 160,32 to 160+192,32+192 (Right=352, Bottom=224).
+        // Screen Height 256. Bottom area: 224 to 256.
+        
+        // Moves: Left aligned? Or Centered?
+        // Let's put instructions below the board. 
+        // Board left X = 160.
+        
+        do Output.moveCursor(21, 20); // Row 21 is approx Y=231
+        do Output.printString("Moves: ");
+        do Output.printInt(moves);
+        
+        do Output.moveCursor(22, 20);
+        do Output.printString("[R] Regen  [Q] Quit");
         return;
     }
 

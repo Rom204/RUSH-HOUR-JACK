@@ -54,15 +54,15 @@ class Board {
         return true;
     }
 
-    /** Moves a car. direction: 1=Up, 2=Down, 3=Left, 4=Right. */
-    method void moveCar(int carIndex, int dir) {
+    /** Moves a car. direction: 1=Up, 2=Down, 3=Left, 4=Right. Returns true if moved. */
+    method boolean moveCar(int carIndex, int dir) {
         var Car c;
         var int x, y, len;
         var boolean vert;
         var int i, pos;
         var boolean canMove;
         
-        if ((carIndex < 0) | (carIndex > (carCount - 1))) { return; }
+        if ((carIndex < 0) | (carIndex > (carCount - 1))) { return false; }
         
         let c = cars[carIndex];
         let x = c.getX();
@@ -133,7 +133,7 @@ class Board {
              let i = i + 1;
         }
         
-        return;
+        return canMove;
     }
     
     /** Returns car count */
@@ -218,6 +218,21 @@ class Board {
 
     /** Disposes the board. */
     method void dispose() {
+        var int i;
+        var Car c;
+        
+        // Dispose all cars
+        let i = 0;
+        while (i < carCount) {
+            let c = cars[i];
+            do c.dispose();
+            let i = i + 1;
+        }
+        
+        if (~(cars = 0)) {
+            do cars.dispose();
+        }
+
         if (~(grid = 0)) {
             do grid.dispose();
         }
