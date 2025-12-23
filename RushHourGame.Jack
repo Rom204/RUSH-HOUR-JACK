@@ -4,11 +4,21 @@ class RushHourGame {
     field int selectedCar;
     field int seed;
     field int moves;
+    field boolean won;
+    field String sMoves;
+    field String sMenu;
+    field String sWin;
 
     /** Constructs a new Rush Hour Game. */
     constructor RushHourGame new(int aseed) {
         let seed = aseed;
         let moves = 0;
+        let won = false;
+        
+        let sMoves = "Moves: ";
+        let sMenu = "[R] Regen  [Q] Quit";
+        let sWin = "You Win! Press R";
+        
         let board = Board.new();
         
         // Generate level based on seed
@@ -46,6 +56,7 @@ class RushHourGame {
             if (key = 82) {
                 let seed = seed + 1;
                 let moves = 0;
+                let won = false;
                 do board.dispose();
                 do Screen.clearScreen();
                 let board = Board.new();
@@ -57,37 +68,39 @@ class RushHourGame {
                 do Sys.wait(500); // Prevent spamming
             }
             
-            // Selection: 0-9 (key 48-57). '0' maps to index 0.
-            if ((key > 47) & (key < 58)) {
-                // Deselect old
-                do board.drawCar(selectedCar, false);
-                let selectedCar = key - 48;
-                // Check bounds (optional, if we have fewer cars)
-                if (selectedCar > (board.getCarCount() - 1)) {
-                     let selectedCar = board.getCarCount() - 1;
+            if (~won) {
+                // Selection: 0-9 (key 48-57). '0' maps to index 0.
+                if ((key > 47) & (key < 58)) {
+                    // Deselect old
+                    do board.drawCar(selectedCar, false);
+                    let selectedCar = key - 48;
+                    // Check bounds (optional, if we have fewer cars)
+                    if (selectedCar > (board.getCarCount() - 1)) {
+                         let selectedCar = board.getCarCount() - 1;
+                    }
+                    // Select new
+                    do board.drawCar(selectedCar, true);
                 }
-                // Select new
-                do board.drawCar(selectedCar, true);
-            }
-            
-            // Movement: Arrows
-            // Up: 131, Down: 133, Left: 130, Right: 132
-            
-            if (key = 131) { 
-                let moved = board.moveCar(selectedCar, 1); 
-                let redraw = true; 
-            } 
-            if (key = 133) { 
-                let moved = board.moveCar(selectedCar, 2); 
-                let redraw = true; 
-            }
-            if (key = 130) { 
-                let moved = board.moveCar(selectedCar, 3); 
-                let redraw = true; 
-            }
-            if (key = 132) { 
-                let moved = board.moveCar(selectedCar, 4); 
-                let redraw = true; 
+                
+                // Movement: Arrows
+                // Up: 131, Down: 133, Left: 130, Right: 132
+                
+                if (key = 131) { 
+                    let moved = board.moveCar(selectedCar, 1); 
+                    let redraw = true; 
+                } 
+                if (key = 133) { 
+                    let moved = board.moveCar(selectedCar, 2); 
+                    let redraw = true; 
+                }
+                if (key = 130) { 
+                    let moved = board.moveCar(selectedCar, 3); 
+                    let redraw = true; 
+                }
+                if (key = 132) { 
+                    let moved = board.moveCar(selectedCar, 4); 
+                    let redraw = true; 
+                }
             }
 
             if (redraw) {
@@ -105,8 +118,8 @@ class RushHourGame {
                 let redCar = board.getCar(0);
                 if (redCar.getX() = 4) {
                     do Output.moveCursor(11, 23);
-                    do Output.printString("You Win! Press R");
-                    // Do not exit, allow user to press R to regen
+                    do Output.printString(sWin);
+                    let won = true;
                 }
             }
 
@@ -128,16 +141,19 @@ class RushHourGame {
         // Board left X = 160.
         
         do Output.moveCursor(21, 20); // Row 21 is approx Y=231
-        do Output.printString("Moves: ");
+        do Output.printString(sMoves);
         do Output.printInt(moves);
         
         do Output.moveCursor(22, 20);
-        do Output.printString("[R] Regen  [Q] Quit");
+        do Output.printString(sMenu);
         return;
     }
 
     /** Disposes this game. */
     method void dispose() {
+        if (~(sMoves = 0)) { do sMoves.dispose(); }
+        if (~(sMenu = 0)) { do sMenu.dispose(); }
+        if (~(sWin = 0)) { do sWin.dispose(); }
         do board.dispose();
         do Memory.deAlloc(this);
         return;
