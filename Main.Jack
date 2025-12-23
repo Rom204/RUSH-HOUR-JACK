@@ -4,6 +4,22 @@ class Main {
         var int seed;
         var char key;
         
+        do Output.moveCursor(8, 26);
+        do Output.printString("RUSH HOUR");
+        
+        do Output.moveCursor(10, 23);
+        do Output.printString("The Logic Game");
+        
+        do Output.moveCursor(14, 26);
+        do Output.printString("CONTROLS:");
+        
+        do Output.moveCursor(16, 17);
+        do Output.printString("Press keys 0-5 to select cars");
+        
+        do Output.moveCursor(18, 18);
+        do Output.printString("Use Arrow Key to move them");
+        
+        do Output.moveCursor(20, 20);
         do Output.printString("Press any key to start...");
         
         let seed = 0;

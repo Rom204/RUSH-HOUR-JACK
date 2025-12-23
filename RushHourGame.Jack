@@ -8,6 +8,10 @@ class RushHourGame {
     field String sMoves;
     field String sMenu;
     field String sWin;
+    field String sControls;
+    field String sSelect;
+    field String sMove;
+    field String sGoal;
 
     /** Constructs a new Rush Hour Game. */
     constructor RushHourGame new(int aseed) {
@@ -19,6 +23,12 @@ class RushHourGame {
         let sMenu = "[R] Regen  [Q] Quit";
         let sWin = "You Win! Press R";
         
+        // Instruction Strings
+        let sControls = "CONTROLS";
+        let sSelect = "Select: 0-5";
+        let sMove = "Move: Arrows";
+        let sGoal = "Goal: Exit ->";
+        
         let board = Board.new();
         
         // Generate level based on seed
@@ -29,6 +39,7 @@ class RushHourGame {
         do board.draw();
         do board.drawCar(selectedCar, true); // Highlight selected
         do drawDashboard();
+        do drawInstructions();
         
         let exit = false;
         return this;
@@ -65,6 +76,7 @@ class RushHourGame {
                 do board.draw();
                 do board.drawCar(selectedCar, true);
                 do drawDashboard();
+                do drawInstructions();
                 do Sys.wait(500); // Prevent spamming
             }
             
@@ -149,11 +161,37 @@ class RushHourGame {
         return;
     }
 
+    /** Draws instructions on the right side of the screen */
+    method void drawInstructions() {
+        // Right side starts around X=352. 
+        // Col = 352 / 8 = 44. Let's use 48 for margin.
+        
+        do Output.moveCursor(4, 48);
+        do Output.printString(sControls);
+        
+        do Output.moveCursor(6, 48);
+        do Output.printString(sSelect);
+        
+        do Output.moveCursor(8, 48);
+        do Output.printString(sMove);
+        
+        do Output.moveCursor(10, 48);
+        do Output.printString(sGoal);
+        
+        return;
+    }
+
     /** Disposes this game. */
     method void dispose() {
         if (~(sMoves = 0)) { do sMoves.dispose(); }
         if (~(sMenu = 0)) { do sMenu.dispose(); }
         if (~(sWin = 0)) { do sWin.dispose(); }
+        
+        if (~(sControls = 0)) { do sControls.dispose(); }
+        if (~(sSelect = 0)) { do sSelect.dispose(); }
+        if (~(sMove = 0)) { do sMove.dispose(); }
+        if (~(sGoal = 0)) { do sGoal.dispose(); }
+        
         do board.dispose();
         do Memory.deAlloc(this);
         return;

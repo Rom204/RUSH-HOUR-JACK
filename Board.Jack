@@ -178,6 +178,20 @@ class Board {
                     let j = j + 4;
                 }
 
+                // Draw Exit Arrow ->
+                // Center of cell (i=6) is x1 + 192 (Right line). 
+                // We want to point OUT. So arrow is to the right of the line?
+                // Or inside pointing out?
+                // Let's put it on the line pointing out.
+                // Tip at x1 + 192 + 10 ?
+                
+                // Shaft
+                do Screen.drawLine(x1 + 185, y1 + 80, x1 + 205, y1 + 80);
+                // Tip (Upper part)
+                do Screen.drawLine(x1 + 205, y1 + 80, x1 + 198, y1 + 75);
+                // Tip (Lower part)
+                do Screen.drawLine(x1 + 205, y1 + 80, x1 + 198, y1 + 85);
+
                 do Screen.drawLine(x1 + (i * 32), y1 + 96, x1 + (i * 32), y1 + 192);
             }
             else {
